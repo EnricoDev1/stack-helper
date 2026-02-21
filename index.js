@@ -3,6 +3,7 @@ const codeOutput = document.getElementById("codeOutput");
 const dataInput = document.getElementById("dataInput");
 const caseLower = document.getElementById('caseLower');
 const caseUpper = document.getElementById('caseUpper');
+const copyButton = document.getElementById('copyButton');
 
 let hash = window.location.hash.substring(1);
 let hashTimeout;
@@ -27,7 +28,7 @@ function strToHex(str) {
 }
 
 function getArchBytes(arch) {
-    return (arch == ('Intel-x64' || "ARM64") ? 8 : 4)
+    return (arch === 'Intel-x64' || arch === 'ARM64') ? 8 : 4
 }
 
 function splitString(hex, bytes) {
@@ -53,12 +54,24 @@ function buildAsmCode(pieces) {
                 code += `push rax\n`;
             }
             break;
+        case "ARM64":
+            for(let i = 0; i < pieces.length; i++) {
+                code += `ldr x0 0x${pieces[i]}\n`
+                code += `str x0, [sp, #-16]!\n`
+            }
+            break
+        case "ARM32":
+            for(let i = 0; i < pieces.length; i++) {
+                code += `ldr r0, =0x${pieces[i]}\n`
+                code += `push {r0}\n`
+            }
+            break
         default:
             alert("Invalid arch");
             break;
         }
-    if (selectedCase != 'lower' && selectedCase != "upper") alert("Invalid case");
-    else return (selectedCase == 'lower') ? code : upperCase(code);
+    if (selectedCase !== 'lower' && selectedCase !== "upper") alert("Invalid case");
+    else return (selectedCase === 'lower') ? code : upperCase(code);
 }
 
 function updateCode() {
@@ -95,15 +108,25 @@ function updateInputs() {
         c.classList.remove('border-primary', 'bg-primary', 'bg-opacity-50');
         c.classList.add('border-secondary', 'bg-secondary', 'bg-opacity-25');
     });
+
     const selCard = document.querySelector(`[data-arch="${selectedArch}"]`);
     if (selCard) {
         selCard.classList.remove('border-secondary', 'bg-secondary', 'bg-opacity-25');
         selCard.classList.add('border-primary', 'bg-primary', 'bg-opacity-50');
     }
 
-    selectedCase === 'lower' ? caseLower.checked = true : caseUpper.checked = true;
+    selectedCase == 'lower' ? caseLower.checked = true : caseUpper.checked = true;
     dataInput.value = currentInput;
 }
+
+copyButton.addEventListener('click', () => {
+    navigator.clipboard.writeText(codeOutput.textContent);
+
+    copyButton.innerText = "Copied!";
+    setInterval(() => {
+        copyButton.innerText = "Copy";
+    }, 1000);
+});
 
 dataInput.addEventListener('input', () => {
     currentInput = dataInput.value;
