@@ -56,7 +56,7 @@ function buildAsmCode(pieces) {
             break;
         case "ARM64":
             for(let i = 0; i < pieces.length; i++) {
-                code += `ldr x0 0x${pieces[i]}\n`
+                code += `ldr x0, 0x${pieces[i]}\n`
                 code += `str x0, [sp, #-16]!\n`
             }
             break
