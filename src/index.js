@@ -125,7 +125,7 @@ copyButton.addEventListener('click', () => {
     copyButton.innerText = "Copied!";
     setInterval(() => {
         copyButton.innerText = "Copy";
-    }, 1000);
+    }, 1200);
 });
 
 dataInput.addEventListener('input', () => {
