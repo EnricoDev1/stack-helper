@@ -11,20 +11,24 @@ let currentInput = "";
 let selectedArch = "";
 let selectedCase = "";
 
+String.prototype.reverse = function() {
+    return this.split("").reverse().join("");
+}
+
 function upperCase(str) {
     return str.toUpperCase().replace(/(?<=0)X/g, 'x');
 } 
 
 function strToHex(str) {
-  let res = "";
-  
-  for (let match of str.matchAll(/\\x([0-9A-Fa-f]{2})|./gs)) 
+    let res = "";
+    str = str.reverse();
+    for (let match of str.matchAll(/\\x([0-9A-Fa-f]{2})|./gs)) 
     if (match[1])
-      res += match[1].toUpperCase();
+        res += match[1].toUpperCase();
     else 
-      res += match[0].charCodeAt(0).toString(16).padStart(2, '0');    
+        res += match[0].charCodeAt(0).toString(16).padStart(2, '0');    
 
-  return res;
+    return res;
 }
 
 function getArchBytes(arch) {
